@@ -1,17 +1,22 @@
 import sys
 
 containers = list()
+cache = list()
+cached = list()
 
 
 def combinations(n, c):
     if n == 0:
-        return [[]]
+        return 1
     if c == 0:
-        return []
+        return 0
+    if cached[n][c]:
+        return cache[n][c]
     result = combinations(n, c-1)
-    if n >= containers[c-1]:
-        result += [[containers[c-1]] + s
-                   for s in combinations(n-containers[c-1], c-1)]
+    if (n >= containers[c-1]):
+        result += combinations(n-containers[c-1], c-1)
+    cache[n][c] = result
+    cached[n][c] = True
     return result
 
 
@@ -24,12 +29,14 @@ def main():
 
     n = int(sys.argv[1])
     m = len(containers)
+    print n
+    print m
 
-    result = combinations(n, m)
+    global cache, cached
+    cache = [[None for _ in range(m+1)] for _ in range(n+1)]
+    cached = [[False for _ in range(m+1)] for _ in range(n+1)]
 
-    lengths = map(len, result)
-    result_filtered = filter(lambda x: x == min(lengths), lengths)
-    print len(result_filtered)
+    print combinations(n, m)
 
 
 if __name__ == '__main__':
